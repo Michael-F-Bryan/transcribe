@@ -3,6 +3,22 @@
 An application for receiving radio transmissions in real time and converting it
 to text. Originally intended for use with emergency services.
 
+## Getting Started
+
+> **TODO:** I should probably write something for this...
+
+## Project Structure
+
+This project has three main parts.
+
+- *Radio Receiver* - This receives a stream of audio (typically from a radio) 
+  and breaks it up into individual transmissions. Attaching timestamps and other
+  useful metadata, and transcribing the audio into text
+- *Frontend* - A web UI which lets users browse received transmissions or play
+  back audio
+- *Server* - Serves up the *Frontend* and feeds it information from the *Radio 
+  Receiver*.
+
 ## License
 
 Licensed under either of
