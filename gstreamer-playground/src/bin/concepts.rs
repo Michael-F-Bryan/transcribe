@@ -5,7 +5,7 @@ fn main() {
     gstreamer::init().unwrap();
 
     let source = ElementFactory::make("videotestsrc", Some("source")).unwrap();
-    let sink = ElementFactory::make("autovideosink", Some("sink")).unwrap();
+    let sink = ElementFactory::make("ximagesink", Some("sink")).unwrap();
 
     let pipeline = Pipeline::new(Some("test-pipeline"));
 
