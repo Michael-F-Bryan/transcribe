@@ -7,17 +7,22 @@ fn main() {
     // create our pipeline elements
     let data = Data {
         source: ElementFactory::make("uridecodebin", Some("source")).unwrap(),
-        convert: ElementFactory::make("audioconvert", Some("convert")).unwrap(),
-        sink: ElementFactory::make("autoaudiosink", Some("sink")).unwrap(),
+        video_convert: ElementFactory::make("videoconvert", Some("video_convert")).unwrap(),
+        video_sink: ElementFactory::make("ximagesink", Some("video_sink")).unwrap(),
+        audio_convert: ElementFactory::make("audioconvert", Some("audio_convert")).unwrap(),
+        audio_sink: ElementFactory::make("autoaudiosink", Some("audio_sink")).unwrap(),
         pipeline: Pipeline::new(Some("test-pipeline")),
     };
 
     // wire up everything but the source
     let bin = data.pipeline.upcast_ref::<Bin>();
     bin.add(&data.source).unwrap();
-    bin.add(&data.convert).unwrap();
-    bin.add(&data.sink).unwrap();
-    data.convert.link(&data.sink).unwrap();
+    bin.add(&data.audio_convert).unwrap();
+    bin.add(&data.audio_sink).unwrap();
+    bin.add(&data.video_convert).unwrap();
+    bin.add(&data.video_sink).unwrap();
+    data.video_convert.link(&data.video_sink).unwrap();
+    data.audio_convert.link(&data.audio_sink).unwrap();
 
     // set the source URI
     data.source.set_property_from_str(
@@ -68,8 +73,10 @@ fn main() {
 struct Data {
     pipeline: Pipeline,
     source: Element,
-    convert: Element,
-    sink: Element,
+    audio_convert: Element,
+    video_convert: Element,
+    audio_sink: Element,
+    video_sink: Element,
 }
 
 impl Data {
@@ -80,22 +87,41 @@ impl Data {
             source.get_name()
         );
 
-        let sink_pad = self.convert.get_static_pad("sink").unwrap();
-        if sink_pad.is_linked() {
-            println!("We are already linked. Ignoring...");
-            return;
-        }
-
         // check the new pad's type
         let caps = pad.get_current_caps().unwrap();
         let caps_struct = caps.get_structure(0).unwrap();
         let pad_type = caps_struct.get_name();
 
-        if !pad_type.starts_with("audio/x-raw") {
+        if pad_type.starts_with("audio/x-raw") {
+            self.wire_up_audio(pad, pad_type);
+        } else if pad_type.starts_with("video/x-raw") {
+            self.wire_up_video(pad, pad_type);
+        } else {
             println!(
-                "It has type \"{}\" which is not raw audio. Ignoring...",
+                "It has type \"{}\" which we can't handle. Ignoring...",
                 pad_type
             );
+        }
+    }
+
+    fn wire_up_audio(&self, pad: &Pad, pad_type: &str) {
+        let sink_pad = self.audio_convert.get_static_pad("sink").unwrap();
+        if sink_pad.is_linked() {
+            println!("We are already linked. Ignoring...");
+            return;
+        }
+
+        // attempt to link
+        match pad.link(&sink_pad) {
+            Ok(_) => println!("Link successful (type: \"{}\")", pad_type),
+            Err(e) => println!("Type is \"{}\" but link failed: {}", pad_type, e),
+        }
+    }
+
+    fn wire_up_video(&self, pad: &Pad, pad_type: &str) {
+        let sink_pad = self.video_convert.get_static_pad("sink").unwrap();
+        if sink_pad.is_linked() {
+            println!("We are already linked. Ignoring...");
             return;
         }
 
