@@ -1,5 +1,4 @@
-use gstreamer::prelude::*;
-use gstreamer::{ElementFactory, MessageView, Pipeline, State};
+use gstreamer::{prelude::*, ElementFactory, MessageView, Pipeline, State};
 
 fn main() {
     gstreamer::init().unwrap();
@@ -29,7 +28,7 @@ fn main() {
                 );
                 eprintln!("Debugging information: {:?}", err.get_debug());
                 break;
-            }
+            },
             MessageView::Eos(..) => break,
             _ => (),
         }

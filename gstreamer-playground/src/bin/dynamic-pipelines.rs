@@ -1,5 +1,6 @@
-use gstreamer::prelude::*;
-use gstreamer::{Bin, Element, ElementFactory, MessageView, Pad, Pipeline, State};
+use gstreamer::{
+    prelude::*, Bin, Element, ElementFactory, MessageView, Pad, Pipeline, State,
+};
 
 fn main() {
     gstreamer::init().unwrap();
@@ -7,10 +8,20 @@ fn main() {
     // create our pipeline elements
     let data = Data {
         source: ElementFactory::make("uridecodebin", Some("source")).unwrap(),
-        video_convert: ElementFactory::make("videoconvert", Some("video_convert")).unwrap(),
-        video_sink: ElementFactory::make("ximagesink", Some("video_sink")).unwrap(),
-        audio_convert: ElementFactory::make("audioconvert", Some("audio_convert")).unwrap(),
-        audio_sink: ElementFactory::make("autoaudiosink", Some("audio_sink")).unwrap(),
+        video_convert: ElementFactory::make(
+            "videoconvert",
+            Some("video_convert"),
+        )
+        .unwrap(),
+        video_sink: ElementFactory::make("ximagesink", Some("video_sink"))
+            .unwrap(),
+        audio_convert: ElementFactory::make(
+            "audioconvert",
+            Some("audio_convert"),
+        )
+        .unwrap(),
+        audio_sink: ElementFactory::make("autoaudiosink", Some("audio_sink"))
+            .unwrap(),
         pipeline: Pipeline::new(Some("test-pipeline")),
     };
 
@@ -50,7 +61,7 @@ fn main() {
                 );
                 eprintln!("Debugging information: {:?}", err.get_debug());
                 break;
-            }
+            },
             MessageView::Eos(..) => break,
             MessageView::StateChanged(change) => {
                 if change.get_src() != Some(data.pipeline.clone().upcast()) {
@@ -63,8 +74,8 @@ fn main() {
                     change.get_old(),
                     change.get_current()
                 );
-            }
-            _ => {}
+            },
+            _ => {},
         }
     }
 }
@@ -114,7 +125,9 @@ impl Data {
         // attempt to link
         match pad.link(&sink_pad) {
             Ok(_) => println!("Link successful (type: \"{}\")", pad_type),
-            Err(e) => println!("Type is \"{}\" but link failed: {}", pad_type, e),
+            Err(e) => {
+                println!("Type is \"{}\" but link failed: {}", pad_type, e)
+            },
         }
     }
 
@@ -128,7 +141,9 @@ impl Data {
         // attempt to link
         match pad.link(&sink_pad) {
             Ok(_) => println!("Link successful (type: \"{}\")", pad_type),
-            Err(e) => println!("Type is \"{}\" but link failed: {}", pad_type, e),
+            Err(e) => {
+                println!("Type is \"{}\" but link failed: {}", pad_type, e)
+            },
         }
     }
 }

@@ -1,5 +1,4 @@
-use gstreamer::prelude::*;
-use gstreamer::{ClockTime, State};
+use gstreamer::{prelude::*, ClockTime, State};
 
 fn main() {
     gstreamer::init().unwrap();
