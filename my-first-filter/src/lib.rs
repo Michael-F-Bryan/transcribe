@@ -14,12 +14,12 @@ gstreamer::gst_plugin_define!(
     my_first_filter,
     env!("CARGO_PKG_DESCRIPTION"),
     plugin_init,
-    env!("CARGO_PKG_VERSION"),
+    concat!(env!("CARGO_PKG_VERSION"), "-", env!("COMMIT_ID")),
     "MIT/X11",
     env!("CARGO_PKG_NAME"),
     env!("CARGO_PKG_NAME"),
     env!("CARGO_PKG_REPOSITORY"),
-    "2017-12-30"
+    env!("BUILD_REL_DATE")
 );
 
 fn plugin_init(plugin: &Plugin) -> Result<(), BoolError> {

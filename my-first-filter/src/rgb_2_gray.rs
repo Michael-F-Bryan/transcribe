@@ -4,12 +4,14 @@ use glib::{
 };
 use gstreamer::{
     subclass::{prelude::*, ElementInstanceStruct},
-    DebugCategory, DebugColorFlags, Element, Plugin, Rank,
+    Caps, DebugCategory, DebugColorFlags, Element, Fraction, FractionRange,
+    IntRange, List, PadDirection, PadPresence, PadTemplate, Plugin, Rank,
 };
 use gstreamer_base::{
     subclass::{prelude::*, BaseTransformMode},
     BaseTransform,
 };
+use gstreamer_video::VideoFormat;
 
 pub fn register(plugin: &Plugin) -> Result<(), BoolError> {
     Element::register(
@@ -51,6 +53,60 @@ impl ObjectSubclass for Rgb2Gray {
             "Converts RGB to GRAY or grayscale RGB",
             env!("CARGO_PKG_AUTHORS"),
         );
+
+        let caps = Caps::new_simple(
+            "video/x-raw",
+            &[
+                (
+                    "format",
+                    &List::new(&[
+                        &VideoFormat::Bgrx.to_string(),
+                        &VideoFormat::Gray8.to_string(),
+                    ]),
+                ),
+                ("width", &IntRange::<i32>::new(0, std::i32::MAX)),
+                ("height", &IntRange::<i32>::new(0, std::i32::MAX)),
+                (
+                    "framerate",
+                    &FractionRange::new(
+                        Fraction::new(0, 1),
+                        Fraction::new(std::i32::MAX, 1),
+                    ),
+                ),
+            ],
+        );
+        let src_pad_template = PadTemplate::new(
+            "src",
+            PadDirection::Src,
+            PadPresence::Always,
+            &caps,
+        )
+        .unwrap();
+        klass.add_pad_template(src_pad_template);
+
+        let caps = Caps::new_simple(
+            "video/x-raw",
+            &[
+                ("format", &VideoFormat::Bgrx.to_string()),
+                ("width", &IntRange::<i32>::new(0, std::i32::MAX)),
+                ("height", &IntRange::<i32>::new(0, std::i32::MAX)),
+                (
+                    "framerate",
+                    &FractionRange::new(
+                        Fraction::new(0, 1),
+                        Fraction::new(std::i32::MAX, 1),
+                    ),
+                ),
+            ],
+        );
+        let sink_pad_template = PadTemplate::new(
+            "sink",
+            PadDirection::Sink,
+            PadPresence::Always,
+            &caps,
+        )
+        .unwrap();
+        klass.add_pad_template(sink_pad_template);
 
         klass.configure(BaseTransformMode::NeverInPlace, false, false);
     }
