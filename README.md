@@ -5,7 +5,16 @@ to text. Originally intended for use with emergency services.
 
 ## Getting Started
 
-> **TODO:** I should probably write something for this...
+This project uses [gstreamer][gst] for realtime audio processing. Before
+starting, make sure you have the following installed:
+
+- `libgstreamer1.0-dev` - shared libraries and files used for developing 
+  aplications that use `gstreamer`
+- `libgstreamer-plugins-base1.0-dev` - development files for libraries from
+  the "base" set of `gstreamer` plugins
+
+> **Note:** These are the names of the corresponding *Ubuntu* packages. Your
+> distro may refer to them under different names.
 
 ## Project Structure
 
@@ -35,3 +44,5 @@ Unless you explicitly state otherwise, any contribution intentionally
 submitted for inclusion in the work by you, as defined in the Apache-2.0
 license, shall be dual licensed as above, without any additional terms or
 conditions.
+
+[gst]: https://gstreamer.freedesktop.org

@@ -1,0 +1,18 @@
+[package]
+name = "my-first-filter"
+version = "0.1.0"
+authors = ["Michael Bryan <michaelfbryan@gmail.com>"]
+edition = "2018"
+description = "My first gstreamer plugin."
+repository = "https://gitlab.com/Michael-F-Bryan/transcribe"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+glib = { git = "https://github.com/gtk-rs/glib", features = ["subclassing"] }
+gstreamer = { git = "https://gitlab.freedesktop.org/gstreamer/gstreamer-rs", features = ["subclassing"] }
+gstreamer-base = { git = "https://gitlab.freedesktop.org/gstreamer/gstreamer-rs", features = ["subclassing"] }
+gstreamer-video = { git = "https://gitlab.freedesktop.org/gstreamer/gstreamer-rs" }
+
+[lib]
+crate-type = ["cdylib"]

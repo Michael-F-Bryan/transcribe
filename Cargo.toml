@@ -1,2 +1,2 @@
 [workspace]
-members = ["gstreamer-playground"]
+members = ["gstreamer-playground", "my-first-filter"]
