@@ -21,7 +21,7 @@ fn main() {
     data.bin.set_state(State::Playing).unwrap();
 
     let bus = data.bin.get_bus().unwrap();
-    let threshold = ClockTime::from_seconds(30);
+    let threshold = ClockTime::from_seconds(5);
 
     while !data.terminate.load(Ordering::SeqCst) {
         let msg = bus.timed_pop_filtered(
@@ -42,14 +42,19 @@ fn main() {
         // no message recieved, that means we got a timeout
 
         if !data.playing.load(Ordering::SeqCst) {
-            continue;
+            break;
         }
 
         // make sure our duration is up to date
         let duration = data.update_duration();
         let current = data.bin.query_position::<ClockTime>().unwrap();
 
-        println!("Currently at {:?} / {:?}", current, duration);
+        let (_, current_state, _) = data.bin.get_state(ClockTime::none());
+
+        println!(
+            "Currently at {} / {} ({:?})",
+            current, duration, current_state
+        );
 
         // If seeking is enabled, we have not done it yet, and the time is
         // right, seek
